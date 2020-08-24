@@ -47,6 +47,13 @@ func (s *ResizeCropHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+
+	originalBucket := r.URL.Query().Get("original_bucket")
+	originalFolder := r.URL.Query().Get("original_folder")
+
+	resizeBucket := r.URL.Query().Get("resize_bucket")
+	resizedFolder := r.URL.Query().Get("resize_folder")
+
 	vars := mux.Vars(r)
 	//Bind params to model
 	img := &model.Image{
@@ -63,7 +70,7 @@ func (s *ResizeCropHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	sess.Config.Region = aws.String(regional)
 
 	originalKey := img.GetS3Key(originalFolder, img.FileName)
-	exist, data, err := s.s3Handler.DownloadImage(ctx, sess, bucket, originalKey)
+	exist, data, err := s.s3Handler.DownloadImage(ctx, sess, originalBucket, originalKey)
 	if !exist {
 		fmt.Printf("Not found image with key: %v\n", originalKey)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
@@ -98,7 +105,7 @@ func (s *ResizeCropHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	//Upload to S3
 	targetKey := img.GetS3Key(resizedFolder, img.GetOutputFileName())
-	output, err := s.s3Handler.UploadImage(ctx, sess, bucket, targetKey, bufferEncode.Bytes())
+	output, err := s.s3Handler.UploadImage(ctx, sess, resizeBucket, targetKey, bufferEncode.Bytes())
 
 	if err != nil {
 		fmt.Printf("Upload image error: %v\n", err)
