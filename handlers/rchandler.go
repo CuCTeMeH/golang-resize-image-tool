@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/CuCTeMeH/golang-resize-image-tool/model"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/ducmeit1/imaging"
 	"github.com/gorilla/mux"
 	"net/http"
 	"os"
-	"resize-image-tool/model"
 )
 
 type ResizeCropHandler struct {
@@ -34,8 +34,7 @@ func (s *ResizeCropHandler) init() error {
 }
 
 func (s *ResizeCropHandler) getConfig() error {
-	if bucket, originalFolder, resizedFolder, regional = os.Getenv("bucket"), os.Getenv("original_folder"), os.Getenv("resized_folder"), os.Getenv("regional");
-		bucket == "" || originalFolder == "" || resizedFolder == "" {
+	if bucket, originalFolder, resizedFolder, regional = os.Getenv("bucket"), os.Getenv("original_folder"), os.Getenv("resized_folder"), os.Getenv("regional"); bucket == "" || originalFolder == "" || resizedFolder == "" {
 		fmt.Printf("Config: %v | %v | %v | %v\n", bucket, originalFolder, resizedFolder, regional)
 		return errors.New("couldn't read config from environment")
 	}
