@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"github.com/CuCTeMeH/golang-resize-image-tool/model"
 	"github.com/aws/aws-sdk-go/aws"
@@ -18,27 +17,19 @@ type ResizeCropHandler struct {
 	s3Handler   S3Bucket
 }
 
-var (
-	bucket, originalFolder, resizedFolder, regional string
-)
+var regional string
 
 func (s *ResizeCropHandler) init() error {
 	if !s.initialized {
-		if err := s.getConfig(); err != nil {
-			return err
-		}
+		s.getConfig()
 		s.s3Handler = new(S3Handler)
 		s.initialized = true
 	}
 	return nil
 }
 
-func (s *ResizeCropHandler) getConfig() error {
-	if bucket, originalFolder, resizedFolder, regional = os.Getenv("bucket"), os.Getenv("original_folder"), os.Getenv("resized_folder"), os.Getenv("regional"); bucket == "" || originalFolder == "" || resizedFolder == "" {
-		fmt.Printf("Config: %v | %v | %v | %v\n", bucket, originalFolder, resizedFolder, regional)
-		return errors.New("couldn't read config from environment")
-	}
-	return nil
+func (s *ResizeCropHandler) getConfig() {
+	regional = os.Getenv("bucket")
 }
 
 func (s *ResizeCropHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
