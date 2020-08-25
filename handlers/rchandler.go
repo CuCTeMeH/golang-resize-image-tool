@@ -29,7 +29,7 @@ func (s *ResizeCropHandler) init() error {
 }
 
 func (s *ResizeCropHandler) getConfig() {
-	regional = os.Getenv("bucket")
+	regional = os.Getenv("regional")
 }
 
 func (s *ResizeCropHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
